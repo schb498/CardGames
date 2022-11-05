@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="js/gofish.js" type="module"></script>
+  </head>
+
+  <body>
+    <div id="preGameArea">
+      <h1>Welcome to Go Fish</h1>
+      <h2>Click 'START' to begin the game</h2>
+      <button id="startButton">START</button>
+    </div>
+
+    <div id="gameArea" , style="display: none">
+      <h1 id="playerHand"></h1>
+      <h2 id="infoLabel">Request a card from the computer</h2>
+      <div id="inputOption">
+        <h2 id="cardSuitLabel">Select the suit:</h2>
+        <input type="radio" name="suit" value="♠" id="spades" />
+        <label for="spade">♠</label>
+        <input type="radio" name="suit" value="♥" id="hearts" />
+        <label for="heart">♥</label>
+        <input type="radio" name="suit" value="♣" id="clubs" />
+        <label for="club">♣</label>
+        <input type="radio" name="suit" value="♦" id="diamonds" />
+        <label for="diamond">♦</label>
+        <h2 id="cardValueLabel">Enter the card value:</h2>
+        <input type="text" id="cardValueField" />
+        <button id="requestButton">Request</button>
+      </div>
+
+      <div id="fishArea" , style="display: none">
+        <button id="fishButton">GO FISH</button>
+        <h2 id="fishCard"></h2>
+      </div>
+      <div id="fullSuitRemove" , style="display: none">
+        <button id="fullSuitRemoveButton">Check</button>
+        <h2 id="fullSuitCheck"></h2>
+      </div>
+    </div>
+  </body>
+</html>
