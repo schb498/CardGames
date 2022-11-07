@@ -1,6 +1,6 @@
 const CARD_SUIT = ["♠", "♥", "♣", "♦"];
 
-export const CARD_VALUE = [
+const CARD_RANK = [
   "A",
   "2",
   "3",
@@ -58,6 +58,22 @@ export class Deck {
     // Checks if card exists
     if (this.remove(card)) {
       hand.add(card);
+      return true;
+    }
+  }
+
+  takeAll(hand, cardRank) {
+    for (let i = 0; i < CARD_SUIT.length; i++) {
+      const card = new Card(CARD_SUIT[i], cardRank);
+      this.take(hand, card);
+    }
+  }
+
+  findRank(cardRank) {
+    for (let i = 0; i < this.cardDeck.length; i++) {
+      if (this.cardDeck[i].rank === cardRank) {
+        return true;
+      }
     }
   }
 
@@ -85,7 +101,7 @@ export class Deck {
   }
 
   getAllBooks() {
-    let cardValueCount = {
+    let cardRankCount = {
       A: 0,
       2: 0,
       3: 0,
@@ -100,29 +116,32 @@ export class Deck {
       Q: 0,
       K: 0,
     };
-    let bookValues = [];
+    let bookRanks = [];
     for (let i = 0; i < this.cardDeck.length; i++) {
-      const curCardVal = this.cardDeck[i].value;
-      cardValueCount[curCardVal]++;
-      if (cardValueCount[curCardVal] === 4) {
-        bookValues.push(curCardVal);
+      const curCardVal = this.cardDeck[i].rank;
+      cardRankCount[curCardVal]++;
+      if (cardRankCount[curCardVal] === 4) {
+        bookRanks.push(curCardVal);
       }
     }
-    return bookValues;
+    return bookRanks;
   }
 
-  removeBooks(bookValues) {
-    // Goes through each value in the input string array and removes all cards with the same card value
-    for (let i = 0; i < bookValues.length; i++) {
+  removeSameRank(cardRanks) {
+    let cardsRemoved = [];
+    // Goes through each rank value in the input string array and removes all cards with the same card rank
+    for (let i = 0; i < cardRanks.length; i++) {
       let j = 0;
       while (j < this.cardDeck.length) {
-        if (this.cardDeck[j].value === bookValues[i]) {
+        if (this.cardDeck[j].rank === cardRanks[i]) {
+          cardsRemoved.push(this.cardDeck[j]);
           this.cardDeck.splice(j, 1);
           j--;
         }
         j++;
       }
     }
+    return cardsRemoved;
   }
 
   shuffle() {
@@ -136,21 +155,21 @@ export class Deck {
 }
 
 export class Card {
-  constructor(suit, value) {
+  constructor(suit, rank) {
     this.suit = suit;
-    this.value = value;
+    this.rank = rank;
   }
 
   showName() {
-    return this.suit + this.value;
+    return this.suit + this.rank;
   }
 }
 
 function newDeck() {
   let deck = [];
   for (let i = 0; i < CARD_SUIT.length; i++) {
-    for (let j = 0; j < CARD_VALUE.length; j++) {
-      deck.push(new Card(CARD_SUIT[i], CARD_VALUE[j]));
+    for (let j = 0; j < CARD_RANK.length; j++) {
+      deck.push(new Card(CARD_SUIT[i], CARD_RANK[j]));
     }
   }
   return deck;

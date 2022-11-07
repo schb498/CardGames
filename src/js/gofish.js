@@ -1,4 +1,4 @@
-import { Deck, Card, CARD_VALUE } from "./deck.js";
+import { Deck, Card } from "./deck.js";
 
 let playerHand = new Deck([]);
 let computerHand = new Deck([]);
@@ -15,8 +15,8 @@ document.getElementById("startButton").onclick = function () {
   cardPool = new Deck();
   cardPool.shuffle();
 
-  cardPool.takeRandomCards(playerHand, 5);
-  cardPool.takeRandomCards(computerHand, 5);
+  cardPool.takeRandomCards(playerHand, 15);
+  cardPool.takeRandomCards(computerHand, 15);
 
   checkPlayerBooks("initialBook");
   checkComputerBooks("computerInitialBook");
@@ -27,19 +27,17 @@ document.getElementById("startButton").onclick = function () {
 
 document.getElementById("requestButton").onclick = function () {
   // Checks if inputs are valid
-  if (validValueCheck() && suitSelectCheck()) {
+  if (validRankCheck()) {
     console.log(
-      "Requested card: " +
-        radioValue('input[name="suit"]:checked').value +
-        fieldValue("cardValueField").replace(/\s+/g, "").toUpperCase()
+      "Requested card rank: " +
+        fieldValue("cardRankField").replace(/\s+/g, "").toUpperCase()
     );
     hide("inputOption");
-    let cardName = new Card(
-      radioValue('input[name="suit"]:checked').value,
-      fieldValue("cardValueField").replace(/\s+/g, "").toUpperCase()
-    );
-    if (computerHand.find(cardName)) {
-      computerHand.take(playerHand, cardName);
+    let cardRank = fieldValue("cardRankField")
+      .replace(/\s+/g, "")
+      .toUpperCase();
+    if (computerHand.findRank(cardRank)) {
+      computerHand.takeAll(playerHand, cardRank);
       updatePlayerCardLabel();
       document.getElementById("infoLabel").innerHTML =
         "The Computer has the card! You take the card from the computer";
@@ -68,13 +66,13 @@ document.getElementById("fishButton").onclick = function () {
 document.getElementById("bookCheckButton").onclick = function () {
   hide("bookCheckButton");
   show("bookCheck");
-  let bookValues = playerHand.getAllBooks();
-  if (bookValues.length !== 0) {
+  let bookRanks = playerHand.getAllBooks();
+  if (bookRanks.length !== 0) {
     document.getElementById("bookCheck").innerHTML =
       "You have books for " +
-      bookValues.toString().replaceAll(",", ", ") +
+      bookRanks.toString().replaceAll(",", ", ") +
       ". They are removed from your hand";
-    playerHand.removeBooks(bookValues);
+    playerHand.removeSameRank(bookRanks);
     updatePlayerCardLabel();
   } else {
     document.getElementById("bookCheck").innerHTML =
@@ -92,43 +90,6 @@ document.getElementById("nextPlayerButton").onclick = function () {
   }
 };
 
-function validValueCheck() {
-  let text = fieldValue("cardValueField").replace(/\s+/g, "").toUpperCase();
-  // Check if text is a valid card value in the value list
-  for (let i = 0; i < CARD_VALUE.length; i++) {
-    if (CARD_VALUE[i] === text) {
-      document.getElementById("cardValueLabel").innerHTML =
-        "Valid card value selected";
-      return true;
-    }
-  }
-  document.getElementById("cardValueField").value = "";
-  document.getElementById("cardValueLabel").innerHTML =
-    "Enter a valid card value:";
-  return false;
-}
-
-function suitSelectCheck() {
-  const checkRadio = radioValue('input[name="suit"]:checked');
-  if (checkRadio !== null) {
-    document.getElementById("cardSuitLabel").innerHTML =
-      checkRadio.getAttribute("id") + " selected";
-    return true;
-  } else {
-    document.getElementById("cardSuitLabel").innerHTML = "No suit selected";
-    return false;
-  }
-}
-
-function resetBoard() {
-  document.getElementById("cardSuitLabel").innerHTML = "Select the suit:";
-  document.getElementById("cardValueLabel").innerHTML = "Enter the card value:";
-  if (radioValue('input[name="suit"]:checked') !== null) {
-    radioValue('input[name="suit"]:checked').checked = false;
-  }
-  document.getElementById("cardValueField").value = "";
-}
-
 function playerTurn() {
   // Sets up for player's turn
   show("infoLabel");
@@ -143,7 +104,7 @@ function playerTurn() {
   hide("nextPlayer");
 
   document.getElementById("infoLabel").innerHTML =
-    "Request a card from the computer";
+    "Request to the computer a card rank for a card in your hand";
   document.getElementById("nextPlayerButton").innerHTML = "Finish turn";
   isPlayerTurn = false;
 }
@@ -153,56 +114,91 @@ function computerTurn() {
   hide("fishArea");
   hide("bookRemove");
   show("computerBox");
-  const requestedCard = computerRequestCard();
-  if (playerHand.remove(requestedCard)) {
+  const requestedCardRank = [computerRequestCardRank()];
+  let cardsRemoved = playerHand.removeSameRank(requestedCardRank);
+  if (cardsRemoved.length > 0) {
     document.getElementById("requestResult").innerHTML =
-      "You give your card to the computer";
-    computerHand.add(requestedCard);
-    console.log("Computer: " + computerHand.showCards());
+      "You give your card/s with the same rank to the computer";
+    for (let i = 0; i < cardsRemoved.length; i++) {
+      computerHand.add(cardsRemoved[i]);
+    }
     updatePlayerCardLabel();
   } else {
     document.getElementById("requestResult").innerHTML =
       "You do not have the card, the computer fishes for a card";
     cardPool.take(computerHand, cardPool.pickRandom());
-    console.log("Computer: " + computerHand.showCards());
   }
   checkComputerBooks("computerBookCheck");
+  console.log("Computer: " + computerHand.showCards());
   document.getElementById("nextPlayerButton").innerHTML = "Next turn";
   isPlayerTurn = true;
   show("nextPlayer");
 }
 
-function computerRequestCard() {
-  let requestCardPool = new Deck();
-  for (let i = 0; i < computerHand.cardDeck.length; i++) {
-    requestCardPool.remove(computerHand.cardDeck[i]);
+function validRankCheck() {
+  let text = fieldValue("cardRankField").replace(/\s+/g, "").toUpperCase();
+  // Check if text is a valid card rank in player's hand
+  for (let i = 0; i < playerHand.cardDeck.length; i++) {
+    if (playerHand.cardDeck[i].rank === text) {
+      document.getElementById("cardRankLabel").innerHTML =
+        "Valid card rank selected";
+      return true;
+    }
   }
-  let requestedCard = requestCardPool.pickRandom();
+  document.getElementById("cardRankField").value = "";
+  document.getElementById("cardRankLabel").innerHTML =
+    "Please enter a valid card rank:";
+  return false;
+}
+
+// Suit selection is not needed for the normal version of the game
+function suitSelectCheck() {
+  const checkRadio = radioValue('input[name="suit"]:checked');
+  if (checkRadio !== null) {
+    //document.getElementById("cardSuitLabel").innerHTML =
+    checkRadio.getAttribute("id") + " selected";
+    return true;
+  } else {
+    //document.getElementById("cardSuitLabel").innerHTML = "No suit selected";
+    return false;
+  }
+}
+
+function resetBoard() {
+  //document.getElementById("cardSuitLabel").innerHTML = "Select the suit:";
+  document.getElementById("cardRankLabel").innerHTML = "Enter the card value:";
+  if (radioValue('input[name="suit"]:checked') !== null) {
+    radioValue('input[name="suit"]:checked').checked = false;
+  }
+  document.getElementById("cardRankField").value = "";
+}
+
+function computerRequestCardRank() {
+  let requestedCardRank = computerHand.pickRandom().rank;
   document.getElementById("infoLabel").innerHTML = "It's the computer's turn!";
   document.getElementById("computerText").innerHTML =
-    "The computer has requested the card " + requestedCard.showName();
-  return requestedCard;
+    "The computer has requested the card rank " + requestedCardRank;
+  return requestedCardRank;
 }
 
 function checkPlayerBooks(displayid) {
-  let bookValues = playerHand.getAllBooks();
-  if (bookValues.length !== 0) {
+  let bookRanks = playerHand.getAllBooks();
+  if (bookRanks.length !== 0) {
     document.getElementById(displayid).innerHTML =
       "You have book/s for " +
-      bookValues.toString().replaceAll(",", ", ") +
+      bookRanks.toString().replaceAll(",", ", ") +
       ". The cards in the book/s are removed from your hand";
-    playerHand.removeBooks(bookValues);
+    playerHand.removeSameRank(bookRanks);
   }
 }
 
 function checkComputerBooks(displayid) {
-  let bookValues = computerHand.getAllBooks();
-  if (bookValues.length !== 0) {
+  let bookRanks = computerHand.getAllBooks();
+  if (bookRanks.length !== 0) {
     document.getElementById(displayid).innerHTML =
       "The computer has book/s for " +
-      bookValues.toString().replaceAll(",", ", ") +
+      bookRanks.toString().replaceAll(",", ", ") +
       ". The cards in the book/s are removed from its hand";
-    computerHand.removeBooks(bookValues);
   }
 }
 
