@@ -7,7 +7,7 @@
 
 # testing
 /coverage
-/old
+/oldfiles/
 
 # production
 /build
