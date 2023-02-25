@@ -33,6 +33,14 @@ export class Deck {
     return allCards;
   }
 
+  getCardValues() {
+    let allCards = [];
+    for (let i = 0; i < this.cardDeck.length; i++) {
+      allCards[i] = this.cardDeck[i].showName();
+    }
+    return allCards;
+  }
+
   takeRandomCards(hand, count) {
     let cardsTaken = [];
     for (let i = 0; i < count; i++) {
