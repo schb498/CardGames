@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Happy+Monkey");
 
 * {
   box-sizing: border-box;
@@ -7,7 +7,7 @@
 }
 
 body {
-  font-family: "Poppins", sans-serif;
+  font-family: "Happy Monkey", sans-serif;
 }
 
 .container {
@@ -15,9 +15,9 @@ body {
   margin: 30px auto;
   overflow: auto;
   min-height: 300px;
-  border: 1px solid steelblue;
+  border: 2px solid black;
   padding: 30px;
-  border-radius: 5px;
+  border-radius: 3px;
 }
 
 .header {
@@ -27,17 +27,17 @@ body {
   margin-bottom: 20px;
 }
 
-.btn {
+.button {
   display: inline-block;
-  background: #000;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
+  background: white;
+  color: black;
+  border: 1px solid black;
+  padding: 5px 10px;
   margin: 5px;
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
-  font-size: 15px;
+  font-size: 20px;
   font-family: inherit;
 }
 
@@ -67,11 +67,11 @@ body {
   text-align: center;
 }
 
-.test {
+.card-row {
   display: flex;
 }
 
-.test2 {
+.card-element {
   flex: 1;
 }
 

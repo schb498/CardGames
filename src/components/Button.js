@@ -5,16 +5,12 @@ const Button = ({ color, text, onClick, as: Component = "button" }) => {
   return (
     <Component
       onClick={onClick}
-      className="btn"
+      className="button"
       style={{ backgroundColor: color }}
     >
       <Link to={"/goFishGame"}>{text}</Link>
     </Component>
   );
-};
-
-Button.defaultProps = {
-  color: "lime",
 };
 
 // Sets variable types

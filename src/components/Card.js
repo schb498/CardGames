@@ -5,8 +5,8 @@ const Card = ({ name, scale, color }) => {
     width: 150,
     height: 210,
     borderRadius: 15,
-    fontSize: 50,
-    paddingTop: 58,
+    fontSize: 75,
+    paddingTop: 52,
     scale: scale,
   };
   Object.keys(cardStyle).forEach((key) => {
